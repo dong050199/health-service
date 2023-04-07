@@ -1,0 +1,26 @@
+version: "3"
+services:
+  database:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=test
+      - MYSQL_ROOT_PASSWORD=1234
+    ports:
+      - '3308:3306'
+    volumes:
+      - database:/var/lib/mysql
+      - ./data/mydump.sql:/docker-entrypoint-initdb.d/mydump.sql
+  order_app:
+    build: .
+    env_file:
+      - .env
+    ports: 
+      - "8082:8082"
+    depends_on:
+      - database
+volumes:
+  database:
+    driver: local
